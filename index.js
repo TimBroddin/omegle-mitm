@@ -10,6 +10,20 @@ const app = next({ dev: true })
 const handle = app.getRequestHandler()
 
 const port = process.env.PORT || 3000;
+let servers = [];
+
+function getServers() {
+  request({ uri: 'http://omegle.com/status', json: true}).then((status) => {
+    servers = status.servers;
+  })
+}
+
+setInterval(() => {
+  getServers();
+}, 60*1000);
+
+getServers();
+
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -19,7 +33,11 @@ app.prepare().then(() => {
 
     if (pathname.indexOf('/proxy') !== -1) {
       const rnd = Math.round(Math.random()*7) + 1;
-      const uri = `http://front${rnd}.omegle.com${pathname.replace('/proxy', '')}`;
+      const server = servers[Math.round(Math.random()*servers.length)];
+      if(!server) {
+        res.end('');
+      }
+      const uri = `http://${server}${pathname.replace('/proxy', '')}`;
 
       //console.log(req);
 
