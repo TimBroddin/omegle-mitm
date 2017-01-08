@@ -59,9 +59,10 @@ app.prepare().then(() => {
           },
           body: data.toString('utf8')
         }).then((response) => {
+          console.log(response);
           res.end(response);
         }).catch((err) => {
-          console.log(uri, err.message, headers, data.toString('utf8'));
+          console.log(uri, err.message, data.toString('utf8'));
         });
       });
 
