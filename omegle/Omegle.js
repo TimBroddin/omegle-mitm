@@ -96,6 +96,9 @@ class Omegle {
                         this.sendMessage(txt);
                     });
                     break;
+                case 'serverMessage':
+                  this.serverMessage(payload);
+                  break;
                 default:
             }
         });
@@ -107,6 +110,10 @@ class Omegle {
 
     receiveMessage(text) {
         this.message('message', text);
+    }
+
+    serverMessage(text) {
+      this.message('serverMessage', text);
     }
 
     statusInfo(info) {}

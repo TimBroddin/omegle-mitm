@@ -35,6 +35,16 @@ class OmegleView extends Component {
             c1.sendMessage(txt);
         });
 
+        c1.on('serverMessage', (txt) => {
+          let m = this.state.messages;
+          m.push({type: 'Message', name: 'Server', id: c1.clientID, text: txt});
+        });
+
+        c2.on('serverMessage', (txt) => {
+          let m = this.state.messages;
+          m.push({type: 'Message', name: 'Server', id: c2.clientID, text: txt});
+        });
+
         c1.on('typing', () => {
             c2.sendTyping();
         });
