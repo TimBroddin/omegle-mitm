@@ -5,10 +5,13 @@ class Omegle {
         this.isConnected = true;
         this.queueMessages = [];
         this.hasPartner = false;
+        this.eventTries = 0;
     }
 
     start() {
         this.queueMessages = [];
+        this.eventTries = 0;
+
         fetch(`/proxy/start?rcs=1&firstevents=1&spid=&randid=${this.randId()}&lang=nl`, {
             method: 'POST',
             headers: {
@@ -30,9 +33,10 @@ class Omegle {
                 this.getEvents();
             } else {
                 console.log('Server down?');
+                this.message('serverDown');
                 setTimeout(() => {
                     this.start();
-                }, 2000);
+                }, 30000);
             }
         });
     }
@@ -61,9 +65,15 @@ class Omegle {
                 this.parseEvents(response);
                 this.getEvents();
             } else {
+              this.eventTries++;
+              console.log(`Tries: ${this.eventTries}`);
+              if(this.eventTries > 5) {
+                this.disconnected();
+              } else {
                 setTimeout(() => {
                     this.getEvents();
                 }, 1000);
+              }
             }
         });
     }

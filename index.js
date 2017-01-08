@@ -18,7 +18,8 @@ app.prepare().then(() => {
     const { rawHeaders, body } = req;
 
     if (pathname.indexOf('/proxy') !== -1) {
-      const uri = `http://front2.omegle.com${pathname.replace('/proxy', '')}`;
+      const rnd = Math.round(Math.random()*7) + 1;
+      const uri = `http://front${rnd}.omegle.com${pathname.replace('/proxy', '')}`;
 
       //console.log(req);
 
