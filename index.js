@@ -4,7 +4,8 @@ const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
 const request = require('request-promise');
-var bodyParser = require('body-parser');
+const httpProxy = require('http-proxy');
+
 
 const app = next({ dev: true })
 const handle = app.getRequestHandler()
@@ -24,44 +25,58 @@ setInterval(() => {
 
 getServers();
 
+const proxy = httpProxy.createProxyServer({});
+proxy.on('error', function (err, req, res) {
+  console.log(err);
+});
+
 
 app.prepare().then(() => {
   createServer((req, res) => {
     const { pathname, query } = parse(req.url, true)
     const { method } = req.method;
-    const { rawHeaders, body } = req;
+    const { rawHeaders, body , url} = req;
 
     if (pathname.indexOf('/proxy') !== -1) {
       const rnd = Math.round(Math.random()*7) + 1;
       const server = servers[Math.round(Math.random()*servers.length)];
       if(!server) {
         res.end('');
+        return;
       }
-      const uri = `http://${server}${pathname.replace('/proxy', '')}`;
 
+
+            let headers = {};
+            let data = [];
+            for(let i=0;i<rawHeaders.length;i+=2) {
+
+              headers[rawHeaders[i]] = rawHeaders[i+1];
+            }
+
+            delete headers['Origin'];
+            delete headers['Referer'];
+            delete headers['X-Request-Id'];
+
+            delete headers['X-Forwarded-For'];
+            delete headers['X-Forwarded-Proto'];
+            delete headers['X-Forwarded-Port'];
+            delete headers['Via'];
+            delete headers['Connect-Time'];
+            delete headers['X-Request-Start'];
+            delete headers['Total-Route-Time'];
+            delete headers['Host'];
+
+            headers['Connection'] = 'keep-alive';
+
+
+      const uri = url;
+      req.url = req.url.replace('/proxy/', '');
+      req.headers = headers;
+console.log(req.url);
+      proxy.web(req, res, { target: `http://${server}` });
+return;
       //console.log(req);
 
-      let headers = {};
-      let data = [];
-      for(let i=0;i<rawHeaders.length;i+=2) {
-
-        headers[rawHeaders[i]] = rawHeaders[i+1];
-      }
-
-      delete headers['Origin'];
-      delete headers['Referer'];
-      delete headers['X-Request-Id'];
-
-      delete headers['X-Forwarded-For'];
-      delete headers['X-Forwarded-Proto'];
-      delete headers['X-Forwarded-Port'];
-      delete headers['Via'];
-      delete headers['Connect-Time'];
-      delete headers['X-Request-Start'];
-      delete headers['Total-Route-Time'];
-      delete headers['Host'];
-
-      headers['Connection'] = 'keep-alive';
 
       console.log(uri, query, headers);
 
@@ -73,7 +88,6 @@ app.prepare().then(() => {
         request({
           uri,
           method,
-          qs: query,
           headers,
           body: (data) ? data.toString('utf8') : null
         }).then((response) => {

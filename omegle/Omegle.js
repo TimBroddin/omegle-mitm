@@ -13,15 +13,18 @@ class Omegle {
         this.eventTries = 0;
 
         fetch(`/proxy/start?firstevents=1&lang=nl`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
-                'Connection': 'keep-alive',
-                'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             }
         }).then((response) => {
             return response.text();
         }).then((text) => {
+            if(text) {
             return JSON.parse(text);
+          } else {
+            throw new Error('No text');
+          }
         }).then((response) => {
             if (response && response.clientID) {
                 console.log('Connected to Omegle');
@@ -38,6 +41,8 @@ class Omegle {
                     this.start();
                 }, 30000);
             }
+        }).catch((err) => {
+          console.log(err);
         });
     }
 
