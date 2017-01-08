@@ -31,6 +31,15 @@ app.prepare().then(() => {
 
       delete headers['Origin'];
       delete headers['Referer'];
+      delete headers['X-Request-Id'];
+
+      delete headers['X-Forwarded-For'];
+      delete headers['X-Forwarded-Proto'];
+      delete headers['X-Forwarded-Port'];
+      delete headers['Via'];
+      delete headers['Connect-Time'];
+      delete headers['X-Request-Start'];
+      delete headers['Total-Route-Time'];
 
       headers['Host'] = 'front2.omegle.com';
       console.log(uri, query, headers);
