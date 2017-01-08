@@ -32,6 +32,9 @@ app.prepare().then(() => {
       delete headers['Origin'];
       delete headers['Referer'];
 
+      headers['Host'] = 'front2.omegle.com';
+      console.log(uri, query, headers);
+
       req.on('data', (d) => {
         data.push(d);
       });

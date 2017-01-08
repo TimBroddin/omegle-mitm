@@ -1,4 +1,3 @@
-
 class Omegle {
 
     constructor() {
@@ -10,16 +9,16 @@ class Omegle {
 
     start() {
         this.queueMessages = [];
-        fetch('/proxy/start?rcs=1&firstevents=1&spid=&randid=PBBN7SY8&lang=nl', {
+        fetch(`/proxy/start?rcs=1&firstevents=1&spid=&randid=${this.randId()}&lang=nl`, {
             method: 'POST',
             headers: {
                 'Connection': 'keep-alive',
                 'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
-            },
+            }
         }).then((response) => {
-          return response.text();
+            return response.text();
         }).then((text) => {
-          return JSON.parse(text);
+            return JSON.parse(text);
         }).then((response) => {
             if (response && response.clientID) {
                 console.log('Connected to Omegle');
@@ -30,10 +29,10 @@ class Omegle {
                 this.isConnected = true;
                 this.getEvents();
             } else {
-              console.log('Server down?');
-              setTimeout(() => {
-                this.start();
-              }, 2000);
+                console.log('Server down?');
+                setTimeout(() => {
+                    this.start();
+                }, 2000);
             }
         });
     }
@@ -41,7 +40,6 @@ class Omegle {
     getEvents() {
         if (!this.isConnected)
             return false;
-
 
         console.log(`${this.clientID} Getting events`);
         fetch('/proxy/events', {
@@ -54,11 +52,11 @@ class Omegle {
                 'Content-Type': 'application/x-www-form-urlencoded'
 
             }
-          }).then((response) => {
+        }).then((response) => {
             return response.text();
-          }).then((text) => {
+        }).then((text) => {
             return JSON.parse(text);
-          }).then((response) => {
+        }).then((response) => {
             if (response) {
                 this.parseEvents(response);
                 this.getEvents();
@@ -114,7 +112,7 @@ class Omegle {
     statusInfo(info) {}
 
     typing() {
-      console.log(`${this.clientID} is typing`);
+        console.log(`${this.clientID} is typing`);
 
         this.message('typing', true);
     }
@@ -127,12 +125,11 @@ class Omegle {
 
         console.log(`${this.clientID} Send message ${txt}`);
 
-
         fetch('/proxy/send', {
             method: 'POST',
             body: `id=${encodeURIComponent(this.clientID)}&msg=${encodeURIComponent(txt)}`,
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then((response) => {});
     }
@@ -145,7 +142,7 @@ class Omegle {
             method: 'POST',
             body: `id=${encodeURIComponent(this.clientID)}`,
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then((response) => {});
     }
@@ -160,6 +157,13 @@ class Omegle {
             this.listeners[type] = [];
         }
         this.listeners[type].push(cb);
+    }
+
+    randId() {
+        for (var a = "", b = 0; 8 > b; b++)
+            var c = Math.floor(32 * Math.random()),
+            a = a + "23456789ABCDEFGHJKLMNPQRSTUVWXYZ".charAt(c);
+        return a
     }
 
     message(type, payload) {
