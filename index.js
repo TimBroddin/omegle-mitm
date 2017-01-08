@@ -43,6 +43,8 @@ app.prepare().then(() => {
       delete headers['Total-Route-Time'];
       delete headers['Host'];
 
+      headers['Connection'] = 'keep-alive';
+
       console.log(uri, query, headers);
 
       req.on('data', (d) => {
