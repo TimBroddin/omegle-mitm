@@ -41,6 +41,7 @@ app.prepare().then(() => {
       delete headers['Connect-Time'];
       delete headers['X-Request-Start'];
       delete headers['Total-Route-Time'];
+      delete headers['Host'];
 
       console.log(uri, query, headers);
 
@@ -53,12 +54,8 @@ app.prepare().then(() => {
           uri,
           method,
           qs: query,
-          headers: {
-            'Connection': 'keep-alive',
-            'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: data.toString('utf8')
+          headers,
+          body: (data) ? data.toString('utf8') : null
         }).then((response) => {
           console.log(response);
           res.end(response);
