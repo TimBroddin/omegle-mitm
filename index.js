@@ -41,7 +41,6 @@ app.prepare().then(() => {
       delete headers['X-Request-Start'];
       delete headers['Total-Route-Time'];
 
-      headers['Host'] = 'front2.omegle.com';
       console.log(uri, query, headers);
 
       req.on('data', (d) => {
