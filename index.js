@@ -40,7 +40,7 @@ class Omegle {
         this.eventTries = 0;
         this.getServer();
 
-        request(`http://${this.server}/start?firstevents=1`, {
+        request(`http://${this.server}/start?firstevents=1&lang=nl`, {
             method: 'POST',
             headers: {
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -191,7 +191,7 @@ class Omegle {
         }).then((response) => {}).catch((err) => {
             //console.log(`** Failed to send message`.red);
             this.getServer();
-            this.sendMessage(txt);
+            this.sendTyping();
         });;
     }
 
@@ -244,10 +244,6 @@ c2.on('typing', () => {
     c1.sendTyping();
 });
 
-c2.on('message', (text) => {
-    c1.sendMessage(text);
-    console.log(`${ '[Person 2]'.green} ${text}`);
-});
 
 c1.on('serverMessage', (text) => {
     console.log(`${ '[SERVER]'.red} ${text}`);
