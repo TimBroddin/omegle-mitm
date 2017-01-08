@@ -13,7 +13,7 @@ class Omegle {
         this.eventTries = 0;
 
         fetch(`/proxy/start?firstevents=1&lang=nl`, {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Connection': 'keep-alive',
                 'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36'
