@@ -4,10 +4,10 @@ const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
 const request = require('request-promise');
-const httpProxy = require('http-proxy');
+var bodyParser = require('body-parser');
 
 
-const app = next({ dev: true })
+const app = next()
 const handle = app.getRequestHandler()
 
 const port = process.env.PORT || 3000;
@@ -25,11 +25,6 @@ setInterval(() => {
 
 getServers();
 
-const proxy = httpProxy.createProxyServer({});
-proxy.on('error', function (err, req, res) {
-  console.log(err);
-});
-
 
 app.prepare().then(() => {
   createServer((req, res) => {
@@ -42,41 +37,34 @@ app.prepare().then(() => {
       const server = servers[Math.round(Math.random()*servers.length)];
       if(!server) {
         res.end('');
-        return;
       }
-
-
-            let headers = {};
-            let data = [];
-            for(let i=0;i<rawHeaders.length;i+=2) {
-
-              headers[rawHeaders[i]] = rawHeaders[i+1];
-            }
-
-            delete headers['Origin'];
-            delete headers['Referer'];
-            delete headers['X-Request-Id'];
-
-            delete headers['X-Forwarded-For'];
-            delete headers['X-Forwarded-Proto'];
-            delete headers['X-Forwarded-Port'];
-            delete headers['Via'];
-            delete headers['Connect-Time'];
-            delete headers['X-Request-Start'];
-            delete headers['Total-Route-Time'];
-            delete headers['Host'];
-
-            headers['Connection'] = 'keep-alive';
-
-
       const uri = url;
-      req.url = req.url.replace('/proxy/', '');
-      req.headers = headers;
-console.log(req.url);
-      proxy.web(req, res, { target: `http://${server}` });
-return;
+      req.url = req.url.replace('/proxy', '');
+
+
       //console.log(req);
 
+      let headers = {};
+      let data = [];
+      for(let i=0;i<rawHeaders.length;i+=2) {
+
+        headers[rawHeaders[i]] = rawHeaders[i+1];
+      }
+
+      delete headers['Origin'];
+      delete headers['Referer'];
+      delete headers['X-Request-Id'];
+
+      delete headers['X-Forwarded-For'];
+      delete headers['X-Forwarded-Proto'];
+      delete headers['X-Forwarded-Port'];
+      delete headers['Via'];
+      delete headers['Connect-Time'];
+      delete headers['X-Request-Start'];
+      delete headers['Total-Route-Time'];
+      delete headers['Host'];
+
+      headers['Connection'] = 'keep-alive';
 
       console.log(uri, query, headers);
 

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build": "next build",
     "dev": "next"
   },
   "author": "",
