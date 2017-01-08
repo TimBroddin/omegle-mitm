@@ -12,7 +12,7 @@ class Omegle {
         this.queueMessages = [];
         this.eventTries = 0;
 
-        fetch(`/proxy/start?rcs=1&firstevents=1&spid=&randid=${this.randId()}&lang=nl`, {
+        fetch(`/proxy/start?firstevents=1&lang=nl`, {
             method: 'POST',
             headers: {
                 'Connection': 'keep-alive',
