@@ -40,7 +40,7 @@ class Omegle {
         this.eventTries = 0;
         this.getServer();
 
-        request(`http://${this.server}/start?firstevents=1&lang=nl`, {
+        request(`http://${this.server}/start?firstevents=1`, {
             method: 'POST',
             headers: {
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
@@ -92,7 +92,7 @@ class Omegle {
             }
         }).catch((err) => {
             this.getServer();
-            console.log(`** Failed to fetch events`.red);
+            //console.log(`** Failed to fetch events`.red);
             this.getEvents();
         });
     }
@@ -174,7 +174,7 @@ class Omegle {
             }
         }).then((response) => {}).catch((err) => {
             this.getServer();
-            console.log(`** Failed to send message`.red);
+            //console.log(`** Failed to send message`.red);
             this.sendMessage(txt);
         });
 
@@ -189,7 +189,7 @@ class Omegle {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }).then((response) => {}).catch((err) => {
-            console.log(`** Failed to send message`.red);
+            //console.log(`** Failed to send message`.red);
             this.getServer();
             this.sendMessage(txt);
         });;
