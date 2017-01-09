@@ -8,7 +8,7 @@ let servers = [];
 function getServers() {
     request({uri: 'http://omegle.com/status', json: true}).then((status) => {
         servers = status.servers;
-    })
+    });
 }
 
 setInterval(() => {
@@ -95,6 +95,23 @@ class Omegle {
             //console.log(`** Failed to fetch events`.red);
             this.getEvents();
         });
+    }
+
+    disconnect() {
+      request(`http://${this.server}/disconnect`, {
+        method: 'POST',
+        body: `id=${encodeURIComponent(this.clientID)}`,
+        json: true,
+        headers: {
+            'Connection': 'keep-alive',
+            'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
+            'Content-Type': 'application/x-www-form-urlencoded'
+
+        }
+      }).then((response) => {
+        this.isConnected = false;
+        this.message('disconnect');
+      });
     }
 
     parseEvents(events) {
@@ -227,11 +244,14 @@ let c1 = new Omegle();
 let c2 = new Omegle();
 
 c1.on('message', (text) => {
+    text = `${text} batman!`;
     c2.sendMessage(text);
     console.log(`${ '[Person 1]'.red} ${text}`);
 });
 
 c2.on('message', (text) => {
+    text = `${text} batman!`;
+
     c1.sendMessage(text);
     console.log(`${ '[Person 2]'.green} ${text}`);
 });
@@ -283,34 +303,40 @@ c2.on('serverDown', (server) => {
 })
 
 c1.on('disconnect', () => {
-    setTimeout(() => {
-        if (c1.clientID && c2.clientID) {
-            c1.start();
-            c2.start();
-        }
-    }, 1000);
-    console.log('========== Disconnected ========='.blue.inverse)
+    console.log('========== Person 1 Disconnected ========='.blue.inverse);
+    if(!c2.isConnected) {
+      setTimeout(() => {
+        c1.start();
+        c2.start();
+      }, 2000);
+    } else {
+      c2.disconnect();
+    }
 });
 
 c2.on('disconnect', () => {
-    setTimeout(() => {
-        if (c1.clientID && c2.clientID) {
-            c1.start();
-            c2.start();
-        }
-    }, 1000);
-    console.log('========== Disconnected ========='.blue.inverse)
-
+    console.log('========== Person 2 Disconnected ========='.blue.inverse)
+    if(!c1.isConnected) {
+      setTimeout(() => {
+        c1.start();
+        c2.start();
+      }, 2000);
+    } else {
+      c1.disconnect();
+    }
 });
 
 c1.on('unhandled', (props) => {
     let type = props.type;
     console.log(`Unhandled: ${type}`.yellow);
+    console.log(props.payload);
 });
 
 c2.on('unhandled', (props) => {
     let type = props.type;
     console.log(`Unhandled: ${type}`.yellow);
+    console.log(props.payload);
+
 });
 
 c1.on('error', (err) => {
